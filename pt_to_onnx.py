@@ -40,23 +40,15 @@ def parseToOnnx():
                       dynamic_axes={'inputs' : {0 : 'batch_size'},    # variable lenght axes
                                     'outputs' : {0 : 'batch_size'}})
 
+    print("ONNX model conversion is complete.")
+    return inputs, outputs
+
 def testOnnxFile():
     onnx_model = onnx.load("dm_nfnet_f0.onnx")
     onnx.checker.check_model(onnx_model)
 
+inputs, outputs = parseToOnnx()
 testOnnxFile()
-
-# Run PyTorch model
-model = create_model("dm_nfnet_f0", pretrained=True)
-model.eval()
-
-input_size = model.default_cfg['input_size']
-batch_size = 1
-inputs = torch.randn((batch_size, *input_size))
-outputs = model(inputs)
-assert outputs.shape[0] == batch_size
-assert not torch.isnan(outputs).any(), 'Output included NaNs'
-
 
 # Compare ONNX runtime to PyTorch
 ort_session = onnxruntime.InferenceSession("dm_nfnet_f0.onnx")

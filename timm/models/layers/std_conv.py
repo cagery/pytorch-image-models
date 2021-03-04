@@ -6,7 +6,9 @@ from .padding import get_padding, get_padding_value, pad_same
 
 
 def get_weight(module):
-    std, mean = torch.std_mean(module.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+    #std, mean = torch.std_mean(module.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+    std = torch.std(module.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+    mean = torch.mean(module.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
     weight = (module.weight - mean) / (std + module.eps)
     return weight
 
@@ -28,7 +30,9 @@ class StdConv2d(nn.Conv2d):
         self.eps = eps
 
     def get_weight(self):
-        std, mean = torch.std_mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+        #std, mean = torch.std_mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+        std = torch.std(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+        mean = torch.mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
         weight = (self.weight - mean) / (std + self.eps)
         return weight
 
@@ -54,7 +58,9 @@ class StdConv2dSame(nn.Conv2d):
         self.eps = eps
 
     def get_weight(self):
-        std, mean = torch.std_mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+        #std, mean = torch.std_mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+        std = torch.std(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+        mean = torch.mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
         weight = (self.weight - mean) / (std + self.eps)
         return weight
 
@@ -91,7 +97,9 @@ class ScaledStdConv2d(nn.Conv2d):
         if self.use_layernorm:
             weight = self.scale * F.layer_norm(self.weight, self.weight.shape[1:], eps=self.eps)
         else:
-            std, mean = torch.std_mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+            #std, mean = torch.std_mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+            std = torch.std(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+            mean = torch.mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
             weight = self.scale * (self.weight - mean) / (std + self.eps)
         return self.gain * weight
 
@@ -133,7 +141,9 @@ class ScaledStdConv2dSame(nn.Conv2d):
         if self.use_layernorm:
             weight = self.scale * F.layer_norm(self.weight, self.weight.shape[1:], eps=self.eps)
         else:
-            std, mean = torch.std_mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+            #std, mean = torch.std_mean(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+            std = torch.std(self.weight, dim=[1, 2, 3], keepdim=True, unbiased=False)
+            mean = torch.mean(self.weight, dim=[1, 2, 3], keepdim=True)
             weight = self.scale * (self.weight - mean) / (std + self.eps)
         return self.gain * weight
 
